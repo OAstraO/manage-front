@@ -1,0 +1,14 @@
+# 依赖目录
+node_modules/
+# 构建产物
+dist/
+# 环境变量文件
+.env
+.env.*
+# 编辑器配置（如果有）
+.idea/
+.vscode/
+# 日志文件
+*.log
+# 临时文件
+*.tmp
