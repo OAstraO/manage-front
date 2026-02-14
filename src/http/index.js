@@ -1,8 +1,8 @@
 import axios from 'axios'
 
 const instance = axios.create({
-  baseURL: 'http:127.0.0.1/3007',
-  timeout: 1000,
+  baseURL: 'http://127.0.0.1:3007/api/', 
+   timeout: 5000,
   headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 });
 // 添加请求拦截器
@@ -24,5 +24,5 @@ instance.interceptors.response.use(function (response) {
     // 对响应错误做点什么
     return Promise.reject(error);
   });
-  
+  // 向外暴露一个实例
   export default instance

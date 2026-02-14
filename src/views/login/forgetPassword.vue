@@ -7,9 +7,6 @@
 				<el-form-item label="输入您的注册账号" prop="account">
 					<el-input v-model="forgetData.account" placeholder="输入您的注册账号"></el-input>
 				</el-form-item>
-				<el-form-item label="输入您的个人邮箱" prop="email">
-					<el-input v-model="forgetData.email" placeholder="输入您的个人邮箱"></el-input>
-				</el-form-item>
 			</el-form>
 			<template #footer>
 				<span class="dialog-footer">
@@ -41,37 +38,31 @@
 
 <script lang="ts" setup>
 	import { reactive, ref } from 'vue'
-	// 注释掉缺失的接口引用
-	// import { verify, resetPassword } from '@/api/login.js';
+	import { verifyAccount, resetPassword } from '@/api/login.js';
 	import { ElMessage } from 'element-plus'
 	// 表单定位top
 	const labelPosition = ref('top')
 	// 表单对象接口
 	interface forgetData {
-		account : number | null, // 修复类型错误：初始值为null，需包含null类型
+		account : number | null, 
 		email : string,
 		password : string,
 		repassword : string
 	}
-	// 修复表单验证规则的错误提示（原密码/确认密码提示错写成邮箱）
 	const forgetRules = reactive({
 		account: [
 			{ required: true, message: '请输入您的注册账号', trigger: 'blur' },
 		],
-		email: [
-			{ required: true, message: '请输入您的注册邮箱', trigger: 'blur' },
-		],
 		password: [
-			{ required: true, message: '请输入您的新密码', trigger: 'blur' }, // 修复提示文案
+			{ required: true, message: '请输入您的新密码', trigger: 'blur' }, 
 		],
 		repassword: [
-			{ required: true, message: '请再次确认您的新密码', trigger: 'blur' }, // 修复提示文案
+			{ required: true, message: '请再次确认您的新密码', trigger: 'blur' }, 
 		],
 	})
 	// 表单对象
 	const forgetData : forgetData = reactive({
 		account: null,
-		email: '',
 		password: '',
 		repassword: ''
 	})
@@ -89,16 +80,14 @@
 	const forgetPwdNext = async () => {
 		verifyRef.value.validate(async (valid, fields) => {
 			if (valid) {
-				// 注释掉缺失的接口调用，改为模拟验证成功
-				// const res = await verify(forgetData)
-				const res = { status: 0, id: 1 }; // 模拟返回数据
+				const res = await verifyAccount(forgetData)
 				console.log(res);
-				if (res.status == 0) {
+				if (res.data.status == 0) {
 					ElMessage({
 						message: "验证成功",
 						type: 'success',
 					})
-					localStorage.setItem('id', res.id)
+					localStorage.setItem('id', res.data.id)
 					state.forgetPasswordDialog = false
 					state.changePasswordDialog = true
 					verifyRef.value.resetFields()
@@ -114,11 +103,12 @@
 		resetRef.value.validate(async (valid, fields) => {
 			if (valid) {
 				if (forgetData.password == forgetData.repassword) {
-					// 注释掉缺失的接口调用，改为模拟修改成功
-					// const res = await resetPassword(localStorage.getItem('id'), forgetData.password)
-					const res = { status: 0 }; // 模拟返回数据
+					const res = await resetPassword({
+					  id: localStorage.getItem('id'),
+					  password: forgetData.password
+					})
 					console.log(res);
-					if (res.status == 0) {
+					if (res.data.status == 0) {
 						ElMessage({
 							message: "修改成功",
 							type: 'success',
